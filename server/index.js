@@ -1,3 +1,15 @@
+// Add this at the top
+const path = require('path');
+
+// Add this before your routes
+app.use(express.static(path.join(__dirname, '../')));
+
+// Add this after your routes as a catch-all
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
