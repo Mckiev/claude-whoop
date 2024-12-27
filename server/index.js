@@ -1,21 +1,10 @@
-// Add this at the top
 const path = require('path');
-
-// Add this before your routes
-app.use(express.static(path.join(__dirname, '../')));
-
-// Add this after your routes as a catch-all
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
-});
-
-
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { Pool } = require('pg');
 const whoopRouter = require('./routes/whoop');
-const dataRouter = require('./routes/data'); // Add this line
+const dataRouter = require('./routes/data');
 
 const app = express();
 dotenv.config();
@@ -28,9 +17,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Routes
+// Serve static files - place BEFORE routes
+app.use(express.static(path.join(__dirname, '../')));
+
+// API Routes
 app.use('/api/whoop', whoopRouter);
-app.use('/api/whoop/data', dataRouter); // Add this line
+app.use('/api/whoop/data', dataRouter);
+
+// Serve index.html - this should be LAST
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
