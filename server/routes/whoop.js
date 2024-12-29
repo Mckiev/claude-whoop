@@ -5,14 +5,8 @@ const { Pool } = require('pg');
 const router = express.Router();
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
   ssl: {
-      ca: process.env.CA_CERT,
-      rejectUnauthorized: true
+      rejectUnauthorized: false
   }
 });
 
