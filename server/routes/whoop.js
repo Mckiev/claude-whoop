@@ -18,11 +18,28 @@ pool.on('error', (err) => {
 
 // Test database connection on startup
 pool.connect()
-  .then(() => console.log('Connected to database successfully'))
-  .catch(err => {
-      console.error('Database connection error:', err.message);
-      console.error('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
-  });
+    .then(() => {
+        console.log('Connected to database successfully');
+        // Test query to verify connection
+        return pool.query('SELECT NOW()');
+    })
+    .then(result => {
+        console.log('Database test query successful:', result.rows[0]);
+    })
+    .catch(err => {
+        console.error('Database connection error:', err.message);
+        console.error('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+        if (process.env.DATABASE_URL) {
+            // Log URL structure (without credentials)
+            const url = new URL(process.env.DATABASE_URL);
+            console.error('Database URL structure:', {
+                protocol: url.protocol,
+                host: url.host,
+                pathname: url.pathname
+            });
+        }
+    });
+
 // OAuth initialization
 router.get('/auth', async (req, res) => {
   try {
