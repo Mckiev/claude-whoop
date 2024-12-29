@@ -4,12 +4,16 @@ const crypto = require('crypto');
 const { Pool } = require('pg');
 const router = express.Router();
 
-// At the top of whoop.js, after the imports
 const pool = new Pool({
-  user: 'aimmachine',
-  host: 'localhost',
-  database: 'MouthTape',
-  port: 5432
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+      rejectUnauthorized: false // Required for Digital Ocean's SSL certificates
+  }
+});
+
+// Add error handling for database connection
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle database client', err);
 });
 
 // Test database connection on startup
@@ -17,12 +21,7 @@ pool.connect()
   .then(() => console.log('Connected to database successfully'))
   .catch(err => {
       console.error('Database connection error:', err.message);
-      console.error('Connection details:', {
-          database: 'MouthTape',
-          user: 'aimmachine',
-          host: 'localhost',
-          port: 5432
-      });
+      console.error('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
   });
 // OAuth initialization
 router.get('/auth', async (req, res) => {
