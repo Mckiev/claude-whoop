@@ -31,23 +31,27 @@ router.get('/auth', async (req, res) => {
       redirect_uri: process.env.WHOOP_REDIRECT_URI,
       client_id: process.env.WHOOP_CLIENT_ID
     });
-
+    
     const redirect_uri = 'https://hammerhead-app-5usx4.ondigitalocean.app/api/whoop/callback';
-       
+    
     console.log('Starting OAuth flow...');
     const scopes = 'offline read:recovery read:cycles read:workout read:sleep read:profile read:body_measurement';
     
     const state = crypto.randomBytes(16).toString('hex');
+
+    // First encode the full URL including https://
+    const encodedUri = encodeURIComponent(redirect_uri); // This is the key change
     
     const authUrl = `https://api.prod.whoop.com/oauth/oauth2/auth` +
       `?response_type=code` +
       `&client_id=${process.env.WHOOP_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(process.env.WHOOP_REDIRECT_URI)}` +
+      `&redirect_uri=${encodedUri}` + // Use the separately encoded URI
       `&scope=${encodeURIComponent(scopes)}` +
       `&state=${state}`;
-    
-      console.log('Using redirect URI:', redirect_uri);
-      console.log('Full auth URL:', authUrl);
+
+    console.log('Using redirect URI:', redirect_uri);
+    console.log('Encoded redirect URI:', encodedUri);
+    console.log('Full auth URL:', authUrl);
     
     res.send(`
       <html>
