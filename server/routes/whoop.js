@@ -36,10 +36,11 @@ router.get('/auth', async (req, res) => {
     const scopes = 'offline read:recovery read:cycles read:workout read:sleep read:profile read:body_measurement';
     
     const state = crypto.randomBytes(16).toString('hex');
+
     const authUrl = `https://api.prod.whoop.com/oauth/oauth2/auth` +
       `?response_type=code` +
       `&client_id=${process.env.WHOOP_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(process.env.WHOOP_REDIRECT_URI)}` + /
+      `&redirect_uri=${encodeURIComponent(process.env.WHOOP_REDIRECT_URI)}` + 
       `&scope=${encodeURIComponent(scopes)}` +
       `&state=${state}`;
 
