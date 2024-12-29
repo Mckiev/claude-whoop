@@ -39,6 +39,10 @@ router.get('/auth', async (req, res) => {
       `&scope=${encodeURIComponent(scopes)}` +
       `&state=${state}`;
     
+      console.log('Environment WHOOP_REDIRECT_URI:', process.env.WHOOP_REDIRECT_URI);
+      console.log('Encoded redirect_uri:', encodeURIComponent(process.env.WHOOP_REDIRECT_URI));
+      console.log('Full auth URL:', authUrl);
+    
     res.send(`
       <html>
         <head>
