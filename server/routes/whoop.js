@@ -27,6 +27,17 @@ pool.connect()
 // OAuth initialization
 router.get('/auth', async (req, res) => {
   try {
+    console.log('All environment variables:', {
+      redirect_uri: process.env.WHOOP_REDIRECT_URI,
+      client_id: process.env.WHOOP_CLIENT_ID
+    });
+    
+    // Force the https:// prefix if it's missing
+    let redirect_uri = process.env.WHOOP_REDIRECT_URI;
+    if (!redirect_uri.startsWith('https://')) {
+      redirect_uri = 'https://' + redirect_uri;
+    }
+       
     console.log('Starting OAuth flow...');
     const scopes = 'offline read:recovery read:cycles read:workout read:sleep read:profile read:body_measurement';
     
