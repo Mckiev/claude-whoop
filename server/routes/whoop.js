@@ -7,6 +7,7 @@ const router = express.Router();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
+      ca: process.env.CA_CERT,
       rejectUnauthorized: false // Required for Digital Ocean's SSL certificates
   }
 });
