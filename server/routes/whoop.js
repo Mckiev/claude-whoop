@@ -27,11 +27,13 @@ pool.connect()
 // OAuth initialization
 router.get('/auth', async (req, res) => {
   try {
+    const redirect_uri = 'https://hammerhead-app-5usx4.ondigitalocean.app/api/whoop/callback';
+    
     console.log('All environment variables:', {
       redirect_uri: process.env.WHOOP_REDIRECT_URI,
       client_id: process.env.WHOOP_CLIENT_ID
     });
-    
+
     // Force the https:// prefix if it's missing
     let redirect_uri = process.env.WHOOP_REDIRECT_URI;
     if (!redirect_uri.startsWith('https://')) {
@@ -50,8 +52,7 @@ router.get('/auth', async (req, res) => {
       `&scope=${encodeURIComponent(scopes)}` +
       `&state=${state}`;
     
-      console.log('Environment WHOOP_REDIRECT_URI:', process.env.WHOOP_REDIRECT_URI);
-      console.log('Encoded redirect_uri:', encodeURIComponent(process.env.WHOOP_REDIRECT_URI));
+      console.log('Using redirect URI:', redirect_uri);
       console.log('Full auth URL:', authUrl);
     
     res.send(`
