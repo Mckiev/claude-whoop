@@ -10,15 +10,23 @@ const pool = new Pool({
   }
 });
 
-// Add logging to verify configuration
-console.log('Database config:', {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USER,
-  hasPassword: !!process.env.DB_PASSWORD,
-  hasCA: !!process.env.CA_CERT
-});
+const initDatabase = async () => {
+  try {
+      await pool.query(`
+          CREATE TABLE IF NOT EXISTS whoop_users (
+              id SERIAL PRIMARY KEY,
+              email VARCHAR(255) UNIQUE NOT NULL,
+              access_token TEXT NOT NULL,
+              refresh_token TEXT NOT NULL,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          )
+      `);
+      console.log('Database initialized - whoop_users table ready');
+  } catch (error) {
+      console.error('Error initializing database:', error);
+  }
+};
 
 // Add error handling for database connection
 pool.on('error', (err) => {
@@ -27,26 +35,13 @@ pool.on('error', (err) => {
 
 // Test database connection on startup
 pool.connect()
-    .then(() => {
+    .then(client => {
         console.log('Connected to database successfully');
-        // Test query to verify connection
-        return pool.query('SELECT NOW()');
-    })
-    .then(result => {
-        console.log('Database test query successful:', result.rows[0]);
+        client.release();
+        return initDatabase();  // Initialize tables after connection
     })
     .catch(err => {
-        console.error('Database connection error:', err.message);
-        console.error('Database URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
-        if (process.env.DATABASE_URL) {
-            // Log URL structure (without credentials)
-            const url = new URL(process.env.DATABASE_URL);
-            console.error('Database URL structure:', {
-                protocol: url.protocol,
-                host: url.host,
-                pathname: url.pathname
-            });
-        }
+        console.error('Connection error:', err);
     });
 
 // OAuth initialization
