@@ -5,11 +5,25 @@ const { Pool } = require('pg');
 const router = express.Router();
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
   ssl: {
       ca: process.env.CA_CERT,
-      rejectUnauthorized: false // Required for Digital Ocean's SSL certificates
+      rejectUnauthorized: true
   }
+});
+
+// Add logging to verify configuration
+console.log('Database config:', {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  hasPassword: !!process.env.DB_PASSWORD,
+  hasCA: !!process.env.CA_CERT
 });
 
 // Add error handling for database connection
